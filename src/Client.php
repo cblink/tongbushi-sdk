@@ -14,7 +14,6 @@ class Client extends Api
      */
     public function getOrder($url, $data)
     {
-
         return $this->setPrefix('openapi/trade')->request($url, $data);
     }
 

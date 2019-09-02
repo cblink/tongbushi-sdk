@@ -5,14 +5,14 @@ namespace Cblink\Tongbushi;
 
 
 use Cblink\Tongbushi\Exceptions\InvalidConfigException;
-use Couchbase\Exception;
+use Exception;
 use GuzzleHttp\Middleware;
 use Hanson\Foundation\AbstractAPI;
-use Pimple\Container;
 use Psr\Http\Message\RequestInterface;
 
 class Api extends AbstractAPI
 {
+    /** @var Tongbushi */
     protected $app;
 
     protected $prefix;
@@ -21,7 +21,12 @@ class Api extends AbstractAPI
 
     protected $timestamp;
 
-    public function __construct(Container $app)
+    /**
+     * @var array
+     */
+    private $data;
+
+    public function __construct($app)
     {
         $this->app = $app;
     }
@@ -44,8 +49,6 @@ class Api extends AbstractAPI
         $response = $this->getHttp()->json($url , $data);
 
         $response = json_decode($response->getBody()->getContents(), true);
-
-        $this->checkErrorAndThrow($response);
 
         return $response;
 
@@ -111,8 +114,8 @@ class Api extends AbstractAPI
     public function generateSign()
     {
         $data = json_encode($this->getData());
-        $md5Str = $data.$this->getTimestamp(). $this->app->getConfig('secret');var_dump($md5Str);exit;
-        return md5($md5Str);
+
+        return md5($data.$this->getTimestamp(). $this->app->getConfig('secret'));
     }
 
     /**
@@ -164,20 +167,5 @@ class Api extends AbstractAPI
 
         return $this;
     }
-
-    /**
-     * 验证请求返回
-     *
-     * @param $result
-     * @throws \Exception
-     */
-    private function checkErrorAndThrow($result)
-    {
-        if(!$result || $result['code'] != 0){
-            throw new \Exception('请求失败请稍后重试');
-        }
-    }
-
-
 
 }
