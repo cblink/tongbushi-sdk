@@ -1,0 +1,10 @@
+{
+    "autoload": {
+        "psr-4": {
+            "Cblink\\Tongbushi\\": "src"
+        }
+    },
+    "require": {
+        "hanson/foundation-sdk": "^3.0"
+    }
+}
