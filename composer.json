@@ -1,7 +1,9 @@
 {
+    "name": "cblink/tongbushi-sdk",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Cblink\\Tongbushi\\": "src"
+            "Cblink\\Tongbushi\\": "src/"
         }
     },
     "require": {
