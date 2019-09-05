@@ -3,7 +3,6 @@
 
 namespace Cblink\Tongbushi;
 
-
 use Cblink\Tongbushi\Exceptions\InvalidConfigException;
 use Exception;
 use GuzzleHttp\Middleware;
@@ -17,7 +16,7 @@ class Api extends AbstractAPI
 
     protected $prefix;
 
-    protected $host = '';
+    protected $host;
 
     protected $timestamp;
 
@@ -29,6 +28,7 @@ class Api extends AbstractAPI
     public function __construct($app)
     {
         $this->app = $app;
+        $this->host = $this->app->getConfig('debug') ? 'https://syncopen.test.meituan.com':'';
     }
 
     /**
@@ -46,12 +46,20 @@ class Api extends AbstractAPI
 
         $url = $this->getRequestUrl($url);
 
-        $response = $this->getHttp()->json($url , $data);
+        $http =$this->getHttp();
+
+        $http->addMiddleware($this->headerMiddleware([
+            'Content-Type' => 'application/json',
+            'X-Timestamp' => $this->getTimestamp(),
+            'X-Partner' => $this->app->getConfig('partner'),
+            'X-Sign' => $this->generateSign(),
+        ]));
+
+        $response = $http->json($url, $data);
 
         $response = json_decode($response->getBody()->getContents(), true);
 
         return $response;
-
     }
 
     /**
@@ -64,46 +72,11 @@ class Api extends AbstractAPI
      */
     public function getRequestUrl($url)
     {
-        if(empty($this->prefix)){
+        if (empty($this->prefix)) {
             throw new Exception('未定义模块');
         }
-        $consumerKey = $this->app->getConfig('consumer_key');
 
-        if(empty($consumerKey)){
-            throw new InvalidConfigException('未定义 consumer_key');
-        }
-        return sprintf('%s/%s/%s/%s', $this->host, $this->prefix, $consumerKey, $url);
-    }
-
-    /**
-     * 头部设置
-     *
-     * @return mixed|void
-     */
-    public function middlewares()
-    {
-        // 1. Content-Type:
-        $this->getHttp()->addMiddleware(Middleware::mapRequest(function(RequestInterface $r){
-            return $r->withHeader('Content-Type', 'application/json');
-        }));
-
-        // 2. X-Timestamp
-        $this->getHttp()->addMiddleware(Middleware::mapRequest(function(RequestInterface $r){
-            return $r->withHeader('X-Timestamp', $this->getTimestamp());
-        }));
-
-        // 3. X-Partner
-        $this->getHttp()->addMiddleware(Middleware::mapRequest(function(RequestInterface $r){
-            if(!$this->app->getConfig('partner')){
-                throw new InvalidConfigException('partner 无配置');
-            }
-            return $r->withHeader('X-Partner', $this->app->getConfig('partner'));
-        }));
-        // 4. X-Sign
-        $this->getHttp()->addMiddleware(Middleware::mapRequest(function(RequestInterface $r){
-
-            return $r->withHeader('X-Sign', $this->generateSign());
-        }));
+        return sprintf('%s/%s/%s', $this->host, $this->prefix, $url);
     }
 
     /**
@@ -125,7 +98,7 @@ class Api extends AbstractAPI
      */
     public function getTimestamp()
     {
-        if(empty($this->timestamp)){
+        if (empty($this->timestamp)) {
             $this->timestamp = time();
         }
 
@@ -142,7 +115,7 @@ class Api extends AbstractAPI
         $this->data= array_merge([
             'consumerKey' => $this->app->getConfig('consumer_key'),
             'companyOuid' => $this->app->getConfig('company_ouid'),
-        ],['body' => $data]);
+        ], ['body' => $data]);
     }
 
     /**
@@ -167,5 +140,4 @@ class Api extends AbstractAPI
 
         return $this;
     }
-
 }

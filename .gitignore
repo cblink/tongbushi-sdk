@@ -2,3 +2,6 @@
 /vendor
 composer.lock
 .idea
+composer.json
+index.php
+.php_cs.cache

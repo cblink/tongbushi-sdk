@@ -19,7 +19,6 @@ use Monolog\Handler\HandlerInterface;
 use Cblink\Tongbushi\Providers\LoggerServiceProvider;
 use Cblink\Tongbushi\Providers\TongbushiServiceProvider;
 
-
 /**
  * @property \Hanson\Foundation\Log $logger
  * @property Client $tongbushi
@@ -69,10 +68,10 @@ class Tongbushi extends Foundation
             $logger->pushHandler($this['config']['log']['handler']);
         } elseif ($logFile = ($this['config']['log']['file'] ?? null)) {
             $logger->pushHandler(new StreamHandler(
-                    $logFile,
-                    $this['config']['log']['level'] ?? Logger::WARNING,
-                    true,
-                    $this['config']['log']['permission'] ?? null
+                $logFile,
+                $this['config']['log']['level'] ?? Logger::WARNING,
+                true,
+                $this['config']['log']['permission'] ?? null
             ));
         }
 
