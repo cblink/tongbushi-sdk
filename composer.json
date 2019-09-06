@@ -8,7 +8,6 @@
     },
     "require": {
         "hanson/foundation-sdk": "^3.0",
-        "ext-json": "*",
-        "friendsofphp/php-cs-fixer": "^2.11"
+        "ext-json": "*"
     }
 }
