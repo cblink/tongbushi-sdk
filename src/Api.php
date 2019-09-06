@@ -57,7 +57,7 @@ class Api extends AbstractAPI
 
         $response = $http->json($url, $data);
 
-        $response = json_decode($response->getBody()->getContents(), true);
+        $response = json_decode(strval($response->getBody()), true);
 
         return $response;
     }
