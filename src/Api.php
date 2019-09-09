@@ -113,9 +113,9 @@ class Api extends AbstractAPI
     public function setData($data)
     {
         $this->data= array_merge([
-            'consumerKey' => $this->app->getConfig('consumer_key'),
             'companyOuid' => $this->app->getConfig('company_ouid'),
-        ], ['body' => $data]);
+            'consumerKey' => $this->app->getConfig('consumer_key'),
+        ], $data);
     }
 
     /**
