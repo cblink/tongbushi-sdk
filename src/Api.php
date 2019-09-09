@@ -99,7 +99,7 @@ class Api extends AbstractAPI
     public function getTimestamp()
     {
         if (empty($this->timestamp)) {
-            $this->timestamp = time();
+            $this->timestamp = intval(substr(microtime(true) * 1000, 0, 13));
         }
 
         return $this->timestamp;
@@ -109,13 +109,17 @@ class Api extends AbstractAPI
      * 格式化数据
      *
      * @param $data
+     * @throws Exception
      */
     public function setData($data)
     {
-        $this->data= array_merge([
-            'companyOuid' => $this->app->getConfig('company_ouid'),
-            'consumerKey' => $this->app->getConfig('consumer_key'),
-        ], $data);
+        if (empty($data['companyOuid'])) {
+            throw new Exception('缺少 companyOuid 信息');
+        }
+        if (empty($data['consumerKey'])) {
+            throw new Exception('缺少 consumerKey 信息');
+        }
+        $this->data= $data;
     }
 
     /**
