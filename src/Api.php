@@ -28,7 +28,7 @@ class Api extends AbstractAPI
     public function __construct($app)
     {
         $this->app = $app;
-        $this->host = $this->app->getConfig('debug') ? 'https://syncopen.test.meituan.com':'';
+        $this->host = $this->app->getConfig('debug') ? 'https://syncopen.test.meituan.com' : 'https://syncopen.meituan.com';
     }
 
     /**
